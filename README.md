@@ -2,13 +2,14 @@
 
 .vim-rsync
 
+```ini
+user    : root
+host    : 127.0.0.1
+target  : /root/target_dir
+exclude : {'node_modules/','*.pyc','.git/'}
+cmd     : python demo.py
 ```
-user: root
-host: 127.0.0.1
-target: /root/target_dir
-exclude: {'node_modules/','*.pyc','.git/'}
 
-```
 Sync on save:
 
 ```vimscript

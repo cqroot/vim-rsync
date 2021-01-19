@@ -43,6 +43,10 @@ function! RsyncStart(...)
             let l:rsync_cmd = l:rsync_cmd_prefix.' '.l:dst.' '.l:src
         endif
         execute 'silent !'.l:rsync_cmd
+
+        if has_key(l:config_dict, 'cmd')
+            execute '!ssh '.l:config_dict['user'].'@'.l:config_dict['host']." 'cd ".l:config_dict['target'].'; '.l:config_dict['cmd']."'"
+        endif
     endif
 endfunction
 
