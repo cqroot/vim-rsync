@@ -22,7 +22,8 @@ function! LoadConfig()
 endfunction
 
 function! RsyncStart(...)
-    let isToRemote = get(a:, 1, 1)
+    let l:isToRemote = get(a:, 1, 1)
+    let l:doRunCmd = get(a:, 2, 0)
 
     let l:config_dict = LoadConfig()
 
@@ -37,19 +38,33 @@ function! RsyncStart(...)
 
         let l:rsync_cmd_prefix = 'rsync -avzu --exclude .vim-rsync '.l:exclude_cmd
 
-        if isToRemote == 1
+        if l:isToRemote == 1
             let l:rsync_cmd = l:rsync_cmd_prefix.' '.l:src.' '.l:dst
         else
             let l:rsync_cmd = l:rsync_cmd_prefix.' '.l:dst.' '.l:src
         endif
 
         let l:exit_cmd = ''
-        if has_key(l:config_dict, 'cmd')
-            let l:exit_cmd = 'ssh '.l:config_dict['user'].'@'.l:config_dict['host']." 'cd ".l:config_dict['target'].'; '.l:config_dict['cmd']."'"
+        if l:doRunCmd == 1
+            if has_key(l:config_dict, 'cmd')
+                let l:exit_cmd = 'ssh '.l:config_dict['user'].'@'.l:config_dict['host']." 'cd ".l:config_dict['target'].'; '.l:config_dict['cmd']."'"
+            endif
         endif
         call rsync#job_start(l:rsync_cmd, l:exit_cmd)
     endif
 endfunction
 
 command! RsyncToRemote   call RsyncStart(1)
+command! RsyncAndRun     call RsyncStart(1, 1)
 command! RsyncFromRemote call RsyncStart(0)
+
+if !executable('rsync')
+    echoerr 'vim-rsync requires rsync'
+    finish
+endif
+
+if exists("g:vim_rsync_sync_on_save")
+    if g:vim_rsync_sync_on_save
+        autocmd BufWritePost,FileWritePost * RsyncToRemote
+    endif
+endif
