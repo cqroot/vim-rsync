@@ -7,11 +7,12 @@ function! LoadConfig()
     if strlen(l:config_file) > 0
         let l:f_config = readfile(l:config_file)
 
-        for line in l:f_config
-            if stridx(line, ':') > 0
-                let l:config_item = split(line, ':')
-                let l:item_name = substitute(l:config_item[0], '^\s*\(.\{-}\)\s*$', '\1', '')
-                let l:item_value = substitute(l:config_item[1], '^\s*\(.\{-}\)\s*$', '\1', '')
+        for l:line in l:f_config
+            let l:idx = stridx(l:line, ':')
+            if l:idx > 0
+                let l:config_item = split(l:line, ':')
+                let l:item_name = substitute(l:line[0:idx-1], '^\s*\(.\{-}\)\s*$', '\1', '')
+                let l:item_value = substitute(l:line[idx+1:-1], '^\s*\(.\{-}\)\s*$', '\1', '')
 
                 let l:config_dict[l:item_name] = l:item_value
             endif
