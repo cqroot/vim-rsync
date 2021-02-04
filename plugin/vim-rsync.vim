@@ -31,6 +31,9 @@ function! RsyncStart(...)
     if has_key(l:config_dict, 'host')
         let l:src = l:config_dict['src']
         let l:dst = l:config_dict['user'].'@'.l:config_dict['host'].':'.l:config_dict['target']
+        if l:dst[:-1] != '/'
+            let l:dst = l:dst.'/'
+        endif
 
         let l:exclude_cmd = ''
         if has_key(l:config_dict, 'exclude')
